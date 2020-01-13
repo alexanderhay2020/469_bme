@@ -15,6 +15,7 @@
 # plot(x,y,'.');
 
 import numpy as np
+import scipy as sci
 import matplotlib.pyplot as plt
 
 np.random.seed(1)
@@ -31,9 +32,19 @@ def part_a():
 
     x = np.random.uniform(low=-10, high=10, size=1000)
     y = 2*x + np.random.normal(0, 1, x.size)
+    plt.title("Part A: Dataset")
+    plt.xlabel("Random Uniform Distribution: n = 1000, -10 < n < 10")
+    plt.ylabel("2*x + e: mu = 0, sigma = 1, size(x)")
     plt.plot(x,y,".")
 
     plt.show()
+
+def part_b():
+    """
+    text
+    """
+
+
 
 def main():
     part_a()
