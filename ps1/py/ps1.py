@@ -93,23 +93,29 @@ def part_c(x, y, rbf_x, rbf_y):
         neuron
         """
         input = rbf_x # size [1x48]
-        weights = np.random.random((48,1)) # size [48x1]
+        weights = np.random.random((48,1000)) # size [48x1000]
 
         # print ("weights shape: " + str(weights.shape))
         # print ("rbf_x shape: " + str(rbf_x.shape))
 
-        xw = np.dot(rbf_x, weights) # [1x48]*[48*1]=[1x1]
+        in_w = np.dot(rbf_x, weights) # [1x48]*[48*1000]=[1x1000]
         # print ("xw shape: " + str(xw.shape))
 
         training_output = y
-        output = sigmoid(xw)
+        output = sigmoid(in_w)
 
         error = training_output - output
 
-        if (i%100==0):
-            print ("training output: " + str(training_output.shape))
-            print ("output shape: " + str(output.shape))
-            print ("error shape: " + str(error.shape))
+        if (i==0):
+            # print ("training output: " + str(training_output.shape))
+            print ("output: " + str(output))
+            print ("error: " + str(error))
+            print
+
+        if (i==999):
+            # print ("training output: " + str(training_output.shape))
+            print ("output: " + str(output))
+            print ("error: " + str(error))
             print
 
         adjustments = error * sigmoid_derivative(output)
