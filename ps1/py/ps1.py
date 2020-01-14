@@ -1,19 +1,3 @@
-# %% data for problem #1a
-# clear
-#
-# a = 0
-# b = 10
-# m = 1000
-# n = 1
-#
-# generate mXn matrix of continuous uniform
-# random values between a and b
-#
-# x = unifrnd(a,b,m,n);
-# e = normrnd(0,1,size(x));
-# y = 2*x
-# plot(x,y,'.');
-
 import numpy as np
 import math
 import logging
@@ -54,11 +38,11 @@ def part_a():
     y = 2*x + np.random.normal(0, 1, x.size) # [1000x1]
 
     fig1 = plt.figure()
-    plt.plot(x,y,".",label="n = 1,000")
+    plt.plot(x, y, ".",label="sample points")
+    plt.plot(x, 2*x, label="original function")
     plt.title("Part A: Dataset")
     plt.xlabel("Random Uniform Distribution: -10 < n < 10")
     plt.ylabel("2*x + e: mu = 0, sigma = 1,q size(x)")
-    plt.plot(x,y,".")
     plt.legend()
 
     return x, y # [1000x1], [1000x1]
@@ -116,22 +100,16 @@ def part_c(x, y, h):
     #     w = w + np.dot(h.T, adjustments)
 
     w = np.dot((1/np.dot(h.T,h)),np.dot(h.T,y))
-    print w.shape
     f_x = np.dot(h,w)
 
+    error = (y-f_x)**2
+
     fig3 = plt.figure()
-    x2=x
     plt.plot(x, y, ".", label="true y values; n=1,000")
-    plt.plot(x2, f_x, ".", label="predicted y values; n=1,000")
+    plt.plot(x, f_x, ".", label="predicted y values; n=1,000")
 
     plt.title("Part C: Weight Vectors")
     plt.legend()
-
-    # plt.ylim(bottom = -20)
-    # plt.ylim(top = 20)
-    # plt.plot(error)
-    # print f_x.shape
-
 
 
 def main():
