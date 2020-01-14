@@ -54,14 +54,14 @@ def part_a():
     y = 2*x + np.random.normal(0, 1, x.size) # [1000x1]
 
     fig1 = plt.figure()
-    plt.plot(x,y,".",label="n = 1000")
+    plt.plot(x,y,".",label="n = 1,000")
     plt.title("Part A: Dataset")
     plt.xlabel("Random Uniform Distribution: -10 < n < 10")
     plt.ylabel("2*x + e: mu = 0, sigma = 1,q size(x)")
     plt.plot(x,y,".")
     plt.legend()
 
-    return x, y
+    return x, y # [1000x1], [1000x1]
 
 
 def part_b(x):
@@ -75,19 +75,17 @@ def part_b(x):
     h = np.zeros((1000,48)) # [1000x48]
     for j in range(len(x_u)): # 1-48
         for i in range(len(x)): # 1-1000
-            eqn = (x[i]-x_u[j])**2
-            # eqn = (-1/(2*(sigma**2)))*(eqn_x)
-
-            h[i,j] = math.exp(-eqn)
+            h[i,j] = math.exp((-abs(x[i]-x_u[j])**2)/sigma**2)
 
     fig2 = plt.figure()
-    plt.title("Part B: Radial Basis Functions")
     plt.plot(x_u, h.T)#,":")
+    plt.title("Part B: Radial Basis Functions")
     plt.xlabel("n = 48, -12 < n < 12")
     plt.ylabel("axis=0, mu = 0, sigma = 1, size(x)")
     plt.ylim(bottom = 0)
     plt.ylim(top = 1)
     # plt.legend()
+
     return h # [1000x48]
 
 def part_c(x, y, h):
@@ -96,45 +94,43 @@ def part_c(x, y, h):
     y    [1000x1]
     h    [1000x48]
     f(x) [1000,1]
-
-    PARAMETERS:
-    r = 1 - standard deviation
-    c = x_u - center
-    w = randomized weight vector [48x1]
     """
-    w = np.random.random((48)) # starting weights [48x1]
-    w0 = w
-    sum = 0
-    f_x = np.zeros((1000))
+    # w = np.random.random((48)) # starting weights [48x1]
 
-    for i in range(1,1000):
-        sum = sum + np.dot(h, w)
-    print f_x.shape
+    # f_x = np.zeros((1000))
+    # f_x = np.dot(w, h.T)
+    # error = f_x - y
+    # for i in range(1,1000):
+    #     sum = sum + np.dot(h, w)
+    # print f_x.shape
 
     # for i in range(48):
         # print h[i,:].shape
         # f_x = f_x + np.dot(h[i,:], w)
         # print f_x.shape
     # for i in range(1000):
-    #     h_x = np.dot(h, w) #[1000x1] = [1000x48]*[48x1]
-    #     h_x = sigmoid(y_n)
-    #     error = y - h_x
-    #     adjustments = error * sigmoid_derivative(h_x)
+    #     f_x = np.dot(w, h.T) #[1000x1] = [1000x48]*[48x1]
+    #     f_x = sigmoid(f_x)
+    #     error = y - f_x
+    #     adjustments = error * sigmoid_derivative(f_x)
     #     w = w + np.dot(h.T, adjustments)
-    #
-    #
-    # print("initial weights: " + str(w0))
-    # print
-    # print("final weights: " + str(w))
-    # print
-    # print("difference: " + str(w-w0))
 
-    # fig3 = plt.figure()
-    # plt.plot(x, y_n)
+    w = np.dot((1/np.dot(h.T,h)),np.dot(h.T,y))
+    print w.shape
+    f_x = np.dot(h,w)
+
+    fig3 = plt.figure()
+    x2=x
+    plt.plot(x, y, ".", label="true y values; n=1,000")
+    plt.plot(x2, f_x, ".", label="predicted y values; n=1,000")
+
+    plt.title("Part C: Weight Vectors")
+    plt.legend()
+
     # plt.ylim(bottom = -20)
     # plt.ylim(top = 20)
     # plt.plot(error)
-    # print h_x.shape
+    # print f_x.shape
 
 
 
