@@ -24,6 +24,12 @@ def sigmoid_derivative(x):
     sig_prime = x*(1-x)
     return sig_prime
 
+def function(x):
+
+    y = 2*x + np.random.normal(0, 1, x.size) # [1000x1]
+
+    return y
+
 def part_a():
     """
     MATLAB CODE:
@@ -35,14 +41,14 @@ def part_a():
     """
 
     x = np.random.uniform(low=-10, high=10, size=1000) # [1000x1]
-    y = 2*x + np.random.normal(0, 1, x.size) # [1000x1]
+    y = function(x) # [1000x1]
 
     fig1 = plt.figure()
     plt.plot(x, y, ".",label="sample points")
-    plt.plot(x, 2*x, label="original function")
+    plt.plot(x, 2*x, "r", label="original function")
     plt.title("Part A: Dataset")
     plt.xlabel("Random Uniform Distribution: -10 < n < 10")
-    plt.ylabel("2*x + e: mu = 0, sigma = 1,q size(x)")
+    # plt.ylabel("2*x + e: mu = 0, sigma = 1,q size(x)")
     plt.legend()
 
     return x, y # [1000x1], [1000x1]
@@ -81,41 +87,47 @@ def part_c(x, y, h):
     """
     # w = np.random.random((48)) # starting weights [48x1]
 
-    # f_x = np.zeros((1000))
-    # f_x = np.dot(w, h.T)
-    # error = f_x - y
-    # for i in range(1,1000):
-    #     sum = sum + np.dot(h, w)
-    # print f_x.shape
-
-    # for i in range(48):
-        # print h[i,:].shape
-        # f_x = f_x + np.dot(h[i,:], w)
-        # print f_x.shape
-    # for i in range(1000):
-    #     f_x = np.dot(w, h.T) #[1000x1] = [1000x48]*[48x1]
-    #     f_x = sigmoid(f_x)
-    #     error = y - f_x
-    #     adjustments = error * sigmoid_derivative(f_x)
-    #     w = w + np.dot(h.T, adjustments)
-
     w = np.dot((1/np.dot(h.T,h)),np.dot(h.T,y))
-    f_x = np.dot(h,w)
+    # f_x = np.dot(h,w)
 
-    error = (y-f_x)**2
+    for i in range(100):
+        f_x = np.dot(h,w) #[1000x1] = [1000x48]*[48x1]
+        f_x = sigmoid(f_x)
+        error = (y-f_x)**2
+        adjustments = error * sigmoid_derivative(f_x)
+        w = w + np.dot(h.T, adjustments)
 
+    # error = (y-f_x)**2
+    print f_x
     fig3 = plt.figure()
     plt.plot(x, y, ".", label="true y values; n=1,000")
+
     plt.plot(x, f_x, ".", label="predicted y values; n=1,000")
 
     plt.title("Part C: Weight Vectors")
     plt.legend()
 
 
+def part_e(x, y):
+    six_x = np.arange(50, dtype=int) # creates a vector of length 50
+    six_x = np.full_like(six_x, 6)
+    six_y = function(six_x)
+    x = np.append(x, six_x)
+    y = np.append(y, six_y)
+
+    fig4 = plt.figure()
+    plt.plot(x, y, ".", label="sample points")
+    plt.plot(x, 2*x, "r", label="original function")
+    plt.plot(six_x, six_y, '.', label="added points")
+    plt.title("Part E: Pertubation")
+
+    plt.legend()
+
 def main():
     x, y = part_a()
     h = part_b(x)
     part_c(x, y, h)
+    part_e(x, y)
     plt.show()
 
 if __name__ == '__main__':
