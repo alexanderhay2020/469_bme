@@ -1,9 +1,6 @@
 import numpy as np
 import math
-import logging
 import matplotlib.pyplot as plt
-
-from scipy.interpolate import Rbf, InterpolatedUnivariateSpline
 
 
 np.random.seed(1)
@@ -30,7 +27,7 @@ def function(x):
 
     return y
 
-def part_a():
+def part_1a():
     """
     MATLAB CODE:
     x = unifrnd(0,10,1000,1);
@@ -54,7 +51,7 @@ def part_a():
     return x, y # [1000x1], [1000x1]
 
 
-def part_b(x):
+def part_1b(x):
     """
     Place their centers at -12 to 12 at every .5 along the x axis.
     Set the standard deviation of each RBF to 1.
@@ -79,7 +76,7 @@ def part_b(x):
     return h # [1000x48]
 
 
-def part_c(y, h):
+def part_1c(y, h):
     """
     x    [1000x1]
     y    [1000x1]
@@ -92,7 +89,7 @@ def part_c(y, h):
     return w
 
 
-def part_d(x, y, h, w):
+def part_1d(x, y, h, w):
 
     f_x = np.random.random((1000))
 
@@ -107,7 +104,7 @@ def part_d(x, y, h, w):
     plt.legend()
 
 
-def part_e(x, y):
+def part_1e(x, y):
 
     six_x = np.arange(50, dtype=int) # creates a vector of length 50
     six_x = np.full_like(six_x, 6)
@@ -125,7 +122,7 @@ def part_e(x, y):
     return x, y, six_x, six_y
 
 
-def part_f(x, y, six_x, six_y):
+def part_1f(x, y, six_x, six_y):
 
     sigma = 1 # standard deviation
     x_u = np.linspace(-12, 12, 48) # centers at -12 to 12 @ every .5 [48x1]
@@ -153,7 +150,7 @@ def part_f(x, y, six_x, six_y):
     return f_x
 
 
-def part_g(x, f_x):
+def part_1g(x, f_x):
 
     sigma = 1
     y = 2*x
@@ -163,7 +160,7 @@ def part_g(x, f_x):
     mean_error_arr = np.full_like(mean_error_arr, mean_error)
 
     percent_error = (error-mean_error)/sigma
-    
+
     fig6 = plt.figure()
     plt.plot(percent_error, label="error magnitude")
     plt.plot(mean_error_arr, 'r', label="mean error = 0.044")
@@ -175,13 +172,13 @@ def part_g(x, f_x):
 
 
 def main():
-    x, y = part_a()
-    h = part_b(x)
-    w = part_c(y, h)
-    part_d(x, y, h, w)
-    x, y, six_x, six_y= part_e(x, y)
-    f_x = part_f(x, y, six_x, six_y)
-    part_g(x, f_x)
+    x, y = part_1a()
+    h = part_1b(x)
+    w = part_1c(y, h)
+    part_1d(x, y, h, w)
+    x, y, six_x, six_y= part_1e(x, y)
+    f_x = part_1f(x, y, six_x, six_y)
+    part_1g(x, f_x)
     plt.show()
 
 if __name__ == '__main__':
