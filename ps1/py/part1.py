@@ -107,13 +107,14 @@ def part_1e(x, y):
     """
     six_x = np.arange(50, dtype=int) # creates a vector of length 50
     six_x = np.full_like(six_x, 6)
-    six_y = function(six_x)
+    six_y = 2*six_x + 10 + np.random.normal(0, 1, six_x.size) # [1050x1]
+
     x = np.append(x, six_x)
     y = np.append(y, six_y)
 
     fig4 = plt.figure()
     plt.plot(x, y, ".", label="sample points")
-    plt.plot(six_x, six_y, '.', label="added points")
+    plt.plot(six_x, six_y, 'g.', label="added points")
     plt.plot(x, 2*x, "r", label="original function")
     plt.title("Part E: Pertubation")
     plt.legend()
@@ -143,7 +144,7 @@ def part_1f(x, y, six_x, six_y):
         f_x[i] = sum(h[i]*w)
 
     fig5 = plt.figure()
-    plt.plot(x, y, ".", label="true y values; n=1,050")
+    plt.plot(x, y, ".", label="sample points; n=1,050")
     plt.plot(x, f_x, ".", label="predicted y values; n=1,050")
     plt.plot(six_x, six_y, '.', label="added points")
     plt.plot(x, 2*x, "r", label="original function")
@@ -165,14 +166,14 @@ def part_1g(x, f_x):
     mean_error_arr = np.arange(len(x), dtype=int)
     mean_error_arr = np.full_like(mean_error_arr, mean_error)
 
-    percent_error = (error-mean_error)/sigma
+    percent_error = (error-mean_error)/100
 
     fig6 = plt.figure()
-    plt.plot(percent_error, label="error magnitude")
-    plt.plot(mean_error_arr, 'r', label="mean error = 0.044")
+    plt.plot(percent_error, label="percent error")
+    plt.plot(mean_error_arr, 'r.', label="mean error = 0.044")
     plt.title("Part G: Error Analysis")
     plt.xlabel("samples; n=1,050")
-    plt.ylabel("error normalized; mu = 0.044, sigma = 1")
+    plt.ylabel("error normalized")
     plt.ylim(-0.1,1.0)
     plt.legend()
 
