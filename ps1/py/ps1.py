@@ -89,10 +89,8 @@ def part_c(y, h):
     # w = np.random.random((48)) # starting weights [48x1]
     w = np.dot(np.linalg.inv(np.dot(h.T,h)),np.dot(h.T,y))
 
-    # error = np.sum((y-f_x)**2)
-    # print f_x
-
     return w
+
 
 def part_d(x, y, h, w):
 
@@ -152,13 +150,38 @@ def part_f(x, y, six_x, six_y):
     plt.title("Part F: RBF Predictions")
     plt.legend()
 
+    return f_x
+
+
+def part_g(x, f_x):
+
+    sigma = 1
+    y = 2*x
+    error = (y-f_x)**2
+    mean_error = sum(error)/len(f_x)
+    mean_error_arr = np.arange(len(x), dtype=int)
+    mean_error_arr = np.full_like(mean_error_arr, mean_error)
+
+    percent_error = (error-mean_error)/sigma
+    
+    fig6 = plt.figure()
+    plt.plot(percent_error, label="error magnitude")
+    plt.plot(mean_error_arr, 'r', label="mean error = 0.044")
+    plt.title("Part G: Error Analysis")
+    plt.xlabel("samples; n=1,050")
+    plt.ylabel("error normalized; mu = 0.044, sigma = 1")
+    plt.ylim(-0.1,1.0)
+    plt.legend()
+
+
 def main():
     x, y = part_a()
     h = part_b(x)
     w = part_c(y, h)
     part_d(x, y, h, w)
     x, y, six_x, six_y= part_e(x, y)
-    part_f(x, y, six_x, six_y)
+    f_x = part_f(x, y, six_x, six_y)
+    part_g(x, f_x)
     plt.show()
 
 if __name__ == '__main__':
