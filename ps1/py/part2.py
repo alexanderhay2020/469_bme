@@ -56,9 +56,38 @@ def part_2a():
     plt.legend()
     plt.show()
 
+def part_2b():
+    """
+    MATLAB CODE:
+    dat1 = [normrnd(6,2,100,1) normrnd(2,1,100,1)];
+    dat2 = [normrnd(2,3,100,1) normrnd(8,1,100,1)];
+    dat = [dat1; dat2];
+    y = [ones(100,1); 0*ones(100,1)];
+
+    line-by-line translation with same output, modified to fit the assignment
+    """
+    tempx = np.random.normal(6,2,size=100)
+    tempy = np.random.normal(2,1,size=100)
+    dat1 = np.array((tempx,tempy))
+
+    tempx = np.random.normal(2,3,size=100)
+    tempy = np.random.normal(8,1,size=100)
+    dat2 = np.array((tempx,tempy))
+
+    y = np.array((np.ones((100)),0*np.ones((100)))).T
+
+    fig1 = plt.figure()
+    plt.plot(dat1[0], dat1[1], "r.", label="dat1")
+    plt.plot(dat2[0], dat2[1], "b.", label="dat2")
+    plt.title("Linear Classification: Part A")
+    plt.xlim(-4,12)
+    plt.ylim(-2,12)
+    plt.legend()
+    plt.show()
 
 def main():
     part_2a()
+    part_2b()
 
 if __name__ == '__main__':
     main()
