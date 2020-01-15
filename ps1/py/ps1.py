@@ -78,6 +78,7 @@ def part_b(x):
 
     return h # [1000x48]
 
+
 def part_c(x, y, h):
     """
     x    [1000x1]
@@ -86,19 +87,27 @@ def part_c(x, y, h):
     f(x) [1000,1]
     """
     # w = np.random.random((48)) # starting weights [48x1]
+    f_x = np.random.random((1000))
+    w = np.dot(np.linalg.inv(np.dot(h.T,h)),np.dot(h.T,y))
 
-    w = np.dot((1/np.dot(h.T,h)),np.dot(h.T,y))
+    # w = np.dot((1/np.dot(h.T,h)),np.dot(h.T,y))
+    # w = np.dot(np.linalg.inv(np.dot(h.T,h)),np.dot(h.T,y))
+    # print type(w)
     # f_x = np.dot(h,w)
 
-    for i in range(100):
-        f_x = np.dot(h,w) #[1000x1] = [1000x48]*[48x1]
-        f_x = sigmoid(f_x)
-        error = (y-f_x)**2
-        adjustments = error * sigmoid_derivative(f_x)
-        w = w + np.dot(h.T, adjustments)
+    for i in range(1000):
+        f_x[i] = sum(h[i]*w)
+    # print f_x.shape
 
-    # error = (y-f_x)**2
-    print f_x
+    # for i in range(100):
+    #     f_x = np.dot(h,w) #[1000x1] = [1000x48]*[48x1]
+    #     f_x = sigmoid(f_x)
+    #     error = (y-f_x)**2
+    #     adjustments = error * sigmoid_derivative(f_x)
+    #     w = w + np.dot(h.T, adjustments)
+
+    error = np.sum((y-f_x)**2)
+    # print f_x
     fig3 = plt.figure()
     plt.plot(x, y, ".", label="true y values; n=1,000")
 
@@ -127,7 +136,7 @@ def main():
     x, y = part_a()
     h = part_b(x)
     part_c(x, y, h)
-    part_e(x, y)
+    # part_e(x, y)
     plt.show()
 
 if __name__ == '__main__':
