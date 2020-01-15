@@ -6,7 +6,10 @@ import matplotlib.pyplot as plt
 np.random.seed(1)
 
 def function(x):
-
+    """
+    mu = 0
+    sigma = 1
+    """
     y = 2*x + np.random.normal(0, 1, x.size) # [1000x1]
 
     return y
