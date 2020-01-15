@@ -62,7 +62,7 @@ def part_b(x):
     sigma = 1 # standard deviation
     x_u = np.linspace(-12, 12, 48) # centers at -12 to 12 @ every .5 [48x1]
 
-    h = np.zeros((1000,48)) # [1000x48]
+    h = np.zeros((len(x),len(x_u))) # [1000x48]
     for j in range(len(x_u)): # 1-48
         for i in range(len(x)): # 1-1000
             h[i,j] = math.exp((-abs(x[i]-x_u[j])**2)/sigma**2)
@@ -79,7 +79,7 @@ def part_b(x):
     return h # [1000x48]
 
 
-def part_c(x, y, h):
+def part_c(y, h):
     """
     x    [1000x1]
     y    [1000x1]
@@ -87,37 +87,30 @@ def part_c(x, y, h):
     f(x) [1000,1]
     """
     # w = np.random.random((48)) # starting weights [48x1]
-    f_x = np.random.random((1000))
     w = np.dot(np.linalg.inv(np.dot(h.T,h)),np.dot(h.T,y))
 
-    # w = np.dot((1/np.dot(h.T,h)),np.dot(h.T,y))
-    # w = np.dot(np.linalg.inv(np.dot(h.T,h)),np.dot(h.T,y))
-    # print type(w)
-    # f_x = np.dot(h,w)
-
-    for i in range(1000):
-        f_x[i] = sum(h[i]*w)
-    # print f_x.shape
-
-    # for i in range(100):
-    #     f_x = np.dot(h,w) #[1000x1] = [1000x48]*[48x1]
-    #     f_x = sigmoid(f_x)
-    #     error = (y-f_x)**2
-    #     adjustments = error * sigmoid_derivative(f_x)
-    #     w = w + np.dot(h.T, adjustments)
-
-    error = np.sum((y-f_x)**2)
+    # error = np.sum((y-f_x)**2)
     # print f_x
+
+    return w
+
+def part_d(x, y, h, w):
+
+    f_x = np.random.random((1000))
+
+    for i in range(len(f_x)):
+        f_x[i] = sum(h[i]*w)
+
     fig3 = plt.figure()
     plt.plot(x, y, ".", label="true y values; n=1,000")
-
     plt.plot(x, f_x, ".", label="predicted y values; n=1,000")
-
-    plt.title("Part C: Weight Vectors")
+    plt.plot(x, 2*x, "r", label="original function")
+    plt.title("Part D: RBF Predictions")
     plt.legend()
 
 
 def part_e(x, y):
+
     six_x = np.arange(50, dtype=int) # creates a vector of length 50
     six_x = np.full_like(six_x, 6)
     six_y = function(six_x)
@@ -126,17 +119,46 @@ def part_e(x, y):
 
     fig4 = plt.figure()
     plt.plot(x, y, ".", label="sample points")
-    plt.plot(x, 2*x, "r", label="original function")
     plt.plot(six_x, six_y, '.', label="added points")
+    plt.plot(x, 2*x, "r", label="original function")
     plt.title("Part E: Pertubation")
+    plt.legend()
 
+    return x, y, six_x, six_y
+
+
+def part_f(x, y, six_x, six_y):
+
+    sigma = 1 # standard deviation
+    x_u = np.linspace(-12, 12, 48) # centers at -12 to 12 @ every .5 [48x1]
+
+    h = np.zeros((len(x),len(x_u))) # [1000x48]
+    for j in range(len(x_u)): # 1-48
+        for i in range(len(x)): # 1-1000
+            h[i,j] = math.exp((-abs(x[i]-x_u[j])**2)/sigma**2)
+
+    w = np.dot(np.linalg.inv(np.dot(h.T,h)),np.dot(h.T,y))
+
+    f_x = np.random.random((1050))
+
+    for i in range(len(f_x)):
+        f_x[i] = sum(h[i]*w)
+
+    fig5 = plt.figure()
+    plt.plot(x, y, ".", label="true y values; n=1,050")
+    plt.plot(x, f_x, ".", label="predicted y values; n=1,050")
+    plt.plot(six_x, six_y, '.', label="added points")
+    plt.plot(x, 2*x, "r", label="original function")
+    plt.title("Part F: RBF Predictions")
     plt.legend()
 
 def main():
     x, y = part_a()
     h = part_b(x)
-    part_c(x, y, h)
-    # part_e(x, y)
+    w = part_c(y, h)
+    part_d(x, y, h, w)
+    x, y, six_x, six_y= part_e(x, y)
+    part_f(x, y, six_x, six_y)
     plt.show()
 
 if __name__ == '__main__':
