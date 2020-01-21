@@ -250,8 +250,8 @@ def part_2c():
     # tempy = temp[:,-1]
     # y = np.expand_dims(tempy,axis=1)
 
-    print y
-    epochs=300
+    # print y
+    epochs = 30
     weights = np.random.random((3,3)) # starting weight for each column (synapse)
     training_output = y
     bias = np.ones((len(dat),1)) # bias
@@ -272,7 +272,8 @@ def part_2c():
         output = sigmoid(xw)
 
         error = training_output - output
-        # error_arr[i] = sum(error)
+        print error.shape
+        error_arr[i] = sum(error[i])
 
         adjustments = error * sigmoid_derivative(output)
 
@@ -298,18 +299,25 @@ def part_2c():
                 y_hat[i][j] = 0
 
 
-    print y_hat
+    # print y_hat
 
-    fig1 = plt.figure()
-    plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
-    plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
-    plt.plot(dat3.T[0], dat3.T[1], "go", label="dat3")
-    plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
+    # fig1 = plt.figure()
+    # plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
+    # plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
+    # plt.plot(dat3.T[0], dat3.T[1], "go", label="dat3")
+    # plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
+    # plt.title("Linear Classification: Part C")
+    # plt.xlim(-5,10)
+    # plt.ylim(-6,12)
+    # plt.legend()
 
-
-    plt.title("Linear Classification: Part C")
-    plt.xlim(-5,10)
-    plt.ylim(-6,12)
+    fig2 = plt.figure()
+    plt.plot(abs(error_arr), label="Error")
+    plt.title("Network Percent error")
+    plt.xlabel("Epoch")
+    plt.ylabel("Error Percent")
+    # plt.xlim(-2,epochs)
+    # plt.ylim(-2,110)
     plt.legend()
 
 def main():
