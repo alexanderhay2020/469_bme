@@ -111,6 +111,7 @@ def part_2a():
     """
     epochs = 3000
     w = np.random.random((3,1)) # starting weight for each column (synapse)
+    training_output = y
     bias = np.ones((len(dat),1)) # bias
     error_arr = np.zeros((epochs,1))
 
@@ -134,12 +135,12 @@ def part_2a():
         input = np.append(input,bias,axis=1)
         xw = np.dot(input,w) # [4x3]*[3*1]=[4x1]
 
-        y_hat = sign(xw)
+        output = sign(xw)
 
-        error = y - y_hat
+        error = training_output - output
         error_arr[i] = sum(error)
 
-        adjustments = error * sign_derivative(y_hat)
+        adjustments = error * sign_derivative(output)
 
         w = w + np.dot(input.T,adjustments)
         # w = normalize(w)
@@ -149,7 +150,7 @@ def part_2a():
     print
 
     print "percent error:"
-    percent_error=(sum(y-np.round(y_hat,0))/epochs)*100
+    percent_error=(sum(y-np.round(output,0))/epochs)*100
     print percent_error[0]
     print
 
@@ -164,7 +165,7 @@ def part_2a():
     plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
     plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
     # plt.plot(np.cross(w.T,input))
-    plt.plot((sum(y-np.round(y_hat,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(y_hat,0))/200)*100))
+    plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
     for i in range(len(y_hat)):
     	if (y_hat[i]<0):
     		plt.plot(dat[i][0], dat[i][1],"b.")
@@ -239,11 +240,11 @@ def part_2b():
     """
     shuffle dataset
     """
-    v_temp = np.append(v_dat,v_y,axis=1)
-    np.random.shuffle(v_temp)
-    v_dat = v_temp[:,:2]
-    v_tempy = v_temp[:,-1]
-    v_y = np.expand_dims(v_tempy,axis=1)
+    # vtemp = np.append(v_dat,y,axis=1)
+    # np.random.shuffle(temp)
+    # v_dat = temp[:,:2]
+    # v_tempy = temp[:,-1]
+    # v_y = np.expand_dims(v_tempy,axis=1)
 
 
     """
@@ -253,6 +254,7 @@ def part_2b():
     """
     epochs = 50
     w = np.random.random((3,1)) # starting weight for each column (synapse)
+    training_output = y
     bias = np.ones((len(dat),1)) # bias
     error_arr = np.zeros((epochs,1))
 
@@ -262,7 +264,7 @@ def part_2b():
     perceptron single layer network
     **********************************************
     """
-    print "Weights Before Training: "
+    print "Starting weights: "
     print w
     print
 
@@ -274,22 +276,22 @@ def part_2b():
         input = np.append(input,bias,axis=1)
         xw = np.dot(input,w) # [4x3]*[3*1]=[4x1]
 
-        y_hat = sigmoid(xw)
+        output = sigmoid(xw)
 
-        error = y - y_hat
+        error = training_output - output
         error_arr[i] = sum(error)
 
-        adjustments = error * sigmoid_derivative(y_hat)
+        adjustments = error * sigmoid_derivative(output)
 
         w = w + np.dot(input.T,adjustments)
         # w = normalize(w)
 
-    print "Weights After Training: "
+    print "Weights after training: "
     print w
     print
 
-    print "Network Percent Error (%):"
-    percent_error=(sum(y-np.round(y_hat,0))/epochs)*100
+    print "percent error:"
+    percent_error=(sum(y-np.round(output,0))/epochs)*100
     print percent_error[0]
     print
 
@@ -304,13 +306,14 @@ def part_2b():
     fig1 = plt.figure()
     plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
     plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
-    # plt.plot((sum(y-np.round(y_hat,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(y_hat,0))/200)*100))
+    # plt.plot(np.cross(w.T,input))
+    plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
     for i in range(len(y_hat)):
     	if (y_hat[i]<0):
     		plt.plot(dat[i][0], dat[i][1],"b.")
     	else:
     		plt.plot(dat[i][0], dat[i][1],"r.")
-    plt.title("Part B: 2 classes, sigmoidal output")
+    plt.title("Linear Classification: Part B")
     plt.xlim(-5,10)
     plt.ylim(-4,14)
     plt.legend()
@@ -367,10 +370,10 @@ def part_2c():
     """
     shuffle dataset
     """
-    # temp = np.append(dat,y,axis=1)
-    # np.random.shuffle(temp)
-    # dat = temp[:,:2]
-    # tempy = temp[:,-3:]
+    temp = np.append(dat,y,axis=1)
+    np.random.shuffle(temp)
+    dat = temp[:,:2]
+    tempy = temp[:,-3:]
 
     print y
 
@@ -405,20 +408,21 @@ def part_2c():
     """
     shuffle dataset
     """
-    v_temp = np.append(v_dat,v_y,axis=1)
-    np.random.shuffle(v_temp)
-    v_dat = v_temp[:,:2]
-    v_tempy = v_temp[:,-3:]
+    # temp = np.append(dat,y,axis=1)
+    # np.random.shuffle(temp)
+    # dat = temp[:,:2]
+    # tempy = temp[:,-1]
+    # y = np.expand_dims(tempy,axis=1)
 
-    print v_y
-
+    # print y
     """
     **********************************************
     set network parameters
     **********************************************
     """
-    epochs = 30
+    epochs = 300
     w = np.random.random((3,3)) # starting weight for each column (synapse)
+    training_output = y
     bias = np.ones((len(dat),1)) # bias
     error_arr = np.zeros((epochs,1))
 
@@ -440,12 +444,13 @@ def part_2c():
         input = np.append(input,bias,axis=1)
         xw = np.dot(input,w)
 
-        y_hat = sigmoid(xw)
+        output = sigmoid(xw)
 
-        error = y - y_hat
-        # print y.shape
+        error = training_output - output
+        # print error.shape
         # error_arr[i] = sum(error[i])
-        adjustments = error * sigmoid_derivative(y_hat)
+
+        adjustments = error * sigmoid_derivative(output)
 
         w = w + np.dot(input.T,adjustments)
         # w = normalize(w)
@@ -455,7 +460,7 @@ def part_2c():
     print
 
     print "percent error:"
-    percent_error=(sum(y-np.round(y_hat,0))/epochs)*100
+    percent_error=(sum(y-np.round(output,0))/epochs)*100
     print percent_error[0]
     print
 
@@ -480,7 +485,7 @@ def part_2c():
     plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
     plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
     plt.plot(dat3.T[0], dat3.T[1], "go", label="dat3")
-    # plt.plot((sum(y-np.round(y_hat,0))/epochs)*100,"wo",label="percent error: " + str(np.round(percent_error,2)))# + str((sum(y-np.round(y_hat,0))/200)*100))
+    plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(np.round(percent_error,2)))# + str((sum(y-np.round(output,0))/200)*100))
 
     for i in range(len(y_hat)):
         if (y_hat[i][0]==1):
