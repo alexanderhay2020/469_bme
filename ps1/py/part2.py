@@ -23,16 +23,16 @@ def sigmoid_derivative(x):
 
     return sig_prime
 
+def normalize(arr):
+    "returns normalized array between -1 and 1"
+
+    arr = arr / np.abs(arr).max(axis=0)
+
+    return arr
 
 def part_2a():
     """
-    MATLAB CODE:
-    dat1 = [normrnd(6,2,100,1) normrnd(2,1,100,1)];
-    dat2 = [normrnd(2,3,100,1) normrnd(8,1,100,1)];
-    dat = [dat1; dat2];
-    y = [ones(100,1); 0*ones(100,1)];
-
-    line-by-line translation with same output, modified to fit the assignment
+    MATLAB Dataset
     """
     tempx = np.random.normal(6,2,size=100)
     tempy = np.random.normal(2,1,size=100)
@@ -42,71 +42,128 @@ def part_2a():
     tempy = np.random.normal(8,1,size=100)
     dat2 = np.array((tempx,tempy)).T
 
-    dat = np.append(dat1, dat2, axis=0)
+    dat = np.append(dat1, dat2, axis=0) # [200x2]
 
-    y = np.array((np.ones((100)),-1*np.ones((100)))).T
+    y = np.expand_dims(np.append(np.ones((100,1)),-1*np.ones((100,1))),axis=1) # [200x1]
 
-    fig1 = plt.figure()
-    plt.plot(dat1[0], dat1[1], "r.", label="dat1")
-    plt.plot(dat2[0], dat2[1], "b.", label="dat2")
-    plt.title("Linear Classification: Part A")
-    plt.xlim(-4,12)
-    plt.ylim(-2,12)
-    plt.legend()
-    plt.show()
+    temp = np.append(dat,y,axis=1)
+    np.random.shuffle(temp)
+    dat = temp[:,:2]
+    tempy = temp[:,-1]
+    y = np.expand_dims(tempy,axis=1)
+
+    epochs=30
+    weights = np.random.random((3,1)) # starting weight for each column (synapse)
+    training_output = y
+    bias = np.ones((len(dat),1)) # bias
+    error_arr = np.zeros((200,1))
+
+    print("weights before: ")
+    print w
+    print
+    # bias = 1 # bias
+    bias = np.ones((len(dat),1)) # bias
+
+    for i in range(epochs):
+        """
+        neuron
+        """
+        input = dat
+        input = np.append(input,bias,axis=1)
+        xw = np.dot(input,weights) # [4x3]*[3*1]=[4x1]
+
+        output = sigmoid(xw)
+
+        error = training_output - output
+        error_arr[i] = sum(error)
+
+        adjustments = error * sigmoid_derivative(output)
+
+        weights = weights + np.dot(input.T,adjustments)
+        # weights = normalize(weights)
 
 def part_2b():
     """
-    MATLAB CODE:
-    dat1 = [normrnd(6,2,100,1) normrnd(2,2,100,1)];
-    dat2 = [normrnd(2,3,100,1) normrnd(8,2,100,1)];
-    dat = [dat1; dat2];
-    y = [ones(100,1); 0*ones(100,1)];
-
-    line-by-line translation with same output, modified to fit the assignment
+    MATLAB Dataset
     """
     tempx = np.random.normal(6,2,size=100)
-    tempy = np.random.normal(2,2,size=100)
+    tempy = np.random.normal(2,1,size=100)
     dat1 = np.array((tempx,tempy)).T
 
     tempx = np.random.normal(2,3,size=100)
-    tempy = np.random.normal(8,2,size=100)
+    tempy = np.random.normal(8,1,size=100)
     dat2 = np.array((tempx,tempy)).T
 
-    dat = np.append(dat1, dat2, axis=0)
+    dat = np.append(dat1, dat2, axis=0) # [200x2]
 
-    y = np.append(np.ones((100)),0*np.ones((100)))
+    y = np.expand_dims(np.append(np.ones((100,1)),0*np.ones((100,1))),axis=1) # [200x1]
 
-    # for i in range(1):
-        # """
-        # neuron
-        # """
-    w = np.random.random((2)) # starting weights [48x1]
+    temp = np.append(dat,y,axis=1)
+    np.random.shuffle(temp)
+    dat = temp[:,:2]
+    tempy = temp[:,-1]
+    y = np.expand_dims(tempy,axis=1)
 
-    y_hat = np.dot(dat,w) # [200x2]*[2x1]=[200x1]
+    epochs=30
+    weights = np.random.random((3,1)) # starting weight for each column (synapse)
+    training_output = y
+    bias = np.ones((len(dat),1)) # bias
+    error_arr = np.zeros((200,1))
 
-    output = sigmoid(y_hat)
+    print "Starting Weights: "
+    print weights
+    print
 
-    error = (y-output)**2
+    for i in range(epochs):
+        """
+        neuron
+        """
+        input = dat
+        input = np.append(input,bias,axis=1)
+        xw = np.dot(input,weights) # [4x3]*[3*1]=[4x1]
 
-    adjustments = error * sigmoid_derivative(output)
+        output = sigmoid(xw)
 
-    w = w + np.dot(dat.T,adjustments)
+        error = training_output - output
+        error_arr[i] = sum(error)
 
-    print w.shape
-    print dat.shape
+        adjustments = error * sigmoid_derivative(output)
 
-    classfied = np.dot(dat,w)
+        weights = weights + np.dot(input.T,adjustments)
+        # weights = normalize(weights)
 
-    print classfied.shape
+    print "Weights after training: "
+    print weights
+    print
+
+    print "percent error:"
+    percent_error=(sum(y-np.round(output,0))/epochs)*100
+    print percent_error[0]
+    print
+
+    y_hat = np.dot(input,weights)
 
     fig1 = plt.figure()
-    plt.plot(dat1.T[0], dat1.T[1], "r.", label="dat1")
-    plt.plot(dat2.T[0], dat2.T[1], "b.", label="dat2")
-    plt.plot(dat.T[1],classfied)
+    plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
+    plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
+    plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
+    for i in range(len(y_hat)):
+    	if (y_hat[i]<0):
+    		plt.plot(dat[i][0], dat[i][1],"b.")
+    	else:
+    		plt.plot(dat[i][0], dat[i][1],"r.")
     plt.title("Linear Classification: Part B")
     plt.xlim(-5,10)
     plt.ylim(-4,14)
+    plt.legend()
+
+    fig2 = plt.figure()
+    plt.plot(abs(error_arr), label="Error")
+    plt.title("Network Percent error")
+    plt.xlabel("Epoch")
+    plt.ylabel("Error Percent")
+    plt.xlim(-10,200)
+    plt.ylim(-10,100)
     plt.legend()
 
 
