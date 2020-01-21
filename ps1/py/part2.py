@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -36,16 +38,22 @@ def sign_derivative(x):
     return x
 
 def normalize(arr):
-    "returns normalized array between -1 and 1"
+    """
+    returns normalized array between -1 and 1
+    """
 
     arr = arr / np.abs(arr).max(axis=0)
 
     return arr
 
 def part_2a():
+
     """
-    MATLAB Dataset
+    **********************************************
+    create training dataset
+    **********************************************
     """
+
     tempx = np.random.normal(6,2,size=100)
     tempy = np.random.normal(2,1,size=100)
     dat1 = np.array((tempx,tempy)).T
@@ -58,20 +66,58 @@ def part_2a():
 
     y = np.expand_dims(np.append(np.ones((100,1)),-1*np.ones((100,1))),axis=1) # [200x1]
 
+    # shuffle dataset
     temp = np.append(dat,y,axis=1)
     np.random.shuffle(temp)
     dat = temp[:,:2]
     tempy = temp[:,-1]
     y = np.expand_dims(tempy,axis=1)
 
+
+    """
+    **********************************************
+    create validation dataset
+    **********************************************
+    """
+
+    tempx = np.random.normal(6,2,size=10)
+    tempy = np.random.normal(2,1,size=10)
+    dat1 = np.array((tempx,tempy)).T
+
+    tempx = np.random.normal(2,3,size=10)
+    tempy = np.random.normal(8,1,size=10)
+    dat2 = np.array((tempx,tempy)).T
+
+    dat = np.append(dat1, dat2, axis=0) # [200x2]
+
+    y = np.expand_dims(np.append(np.ones((10,1)),-1*np.ones((10,1))),axis=1) # [20x1]
+
+    # shuffle dataset
+    temp = np.append(dat,y,axis=1)
+    np.random.shuffle(temp)
+    dat = temp[:,:2]
+    tempy = temp[:,-1]
+    y = np.expand_dims(tempy,axis=1)
+
+
+    """
+    **********************************************
+    set network parameters
+    **********************************************
+    """
     epochs = 3000
-    weights = np.random.random((3,1)) # starting weight for each column (synapse)
-    training_output = y
+    w = np.random.random((3,1)) # starting weight for each column (synapse)
     bias = np.ones((len(dat),1)) # bias
     error_arr = np.zeros((epochs,1))
 
+
+    """
+    **********************************************
+    perceptron single layer network
+    **********************************************
+    """
     print("weights before: ")
-    print weights
+    print w
     print
     # bias = 1 # bias
     bias = np.ones((len(dat),1)) # bias
@@ -80,22 +126,21 @@ def part_2a():
         """
         neuron
         """
-        input = dat
-        input = np.append(input,bias,axis=1)
-        xw = np.dot(input,weights) # [4x3]*[3*1]=[4x1]
+        dat = np.append(dat,bias,axis=1)
+        xw = np.dot(dat,w) # [4x3]*[3*1]=[4x1]
 
         output = sign(xw)
 
-        error = training_output - output
+        error = y - output
         error_arr[i] = sum(error)
 
         adjustments = error * sign_derivative(output)
 
-        weights = weights + np.dot(input.T,adjustments)
-        # weights = normalize(weights)
+        w = w + np.dot(dat.T,adjustments)
+        # w = normalize(w)
 
-    print "Weights after training: "
-    print weights
+    print "weights after training: "
+    print w
     print
 
     print "percent error:"
@@ -103,12 +148,18 @@ def part_2a():
     print percent_error[0]
     print
 
-    y_hat = np.dot(input,weights)
+    y_hat = np.dot(dat,w)
 
+
+    """
+    **********************************************
+    plotting
+    **********************************************
+    """
     fig1 = plt.figure()
     plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
     plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
-    # plt.plot(np.cross(weights.T,input))
+    # plt.plot(np.cross(w.T,dat))
     plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
     for i in range(len(y_hat)):
     	if (y_hat[i]<0):
@@ -130,8 +181,11 @@ def part_2a():
     plt.legend()
 
 def part_2b():
+
     """
-    MATLAB Dataset
+    **********************************************
+    create training dataset
+    **********************************************
     """
     tempx = np.random.normal(6,2,size=100)
     tempy = np.random.normal(2,1,size=100)
@@ -145,42 +199,79 @@ def part_2b():
 
     y = np.expand_dims(np.append(np.ones((100,1)),0*np.ones((100,1))),axis=1) # [200x1]
 
+    # shuffle dataset
     temp = np.append(dat,y,axis=1)
     np.random.shuffle(temp)
     dat = temp[:,:2]
     tempy = temp[:,-1]
     y = np.expand_dims(tempy,axis=1)
 
+
+    """
+    **********************************************
+    create validation dataset
+    **********************************************
+    """
+    tempx = np.random.normal(6,2,size=10)
+    tempy = np.random.normal(2,1,size=10)
+    dat1 = np.array((tempx,tempy)).T
+
+    tempx = np.random.normal(2,3,size=10)
+    tempy = np.random.normal(8,1,size=10)
+    dat2 = np.array((tempx,tempy)).T
+
+    dat = np.append(dat1, dat2, axis=0) # [200x2]
+
+    y = np.expand_dims(np.append(np.ones((10,1)),0*np.ones((10,1))),axis=1) # [200x1]
+
+    # shuffle dataset
+    temp = np.append(dat,y,axis=1)
+    np.random.shuffle(temp)
+    dat = temp[:,:2]
+    tempy = temp[:,-1]
+    y = np.expand_dims(tempy,axis=1)
+
+
+    """
+    **********************************************
+    network parameters
+    **********************************************
+    """
     epochs=30
-    weights = np.random.random((3,1)) # starting weight for each column (synapse)
-    training_output = y
+    w = np.random.random((3,1)) # starting weight for each column (synapse)
     bias = np.ones((len(dat),1)) # bias
     error_arr = np.zeros((epochs,1))
 
-    print "Starting Weights: "
-    print weights
+
+    """
+    **********************************************
+    perceptron single layer network
+    **********************************************
+    """
+    print "Starting weights: "
+    print w
     print
 
     for i in range(epochs):
         """
         neuron
         """
-        input = dat
-        input = np.append(input,bias,axis=1)
-        xw = np.dot(input,weights) # [4x3]*[3*1]=[4x1]
+
+        dat = np.append(dat,bias,axis=1)
+        xw = np.dot(dat,w) # [4x3]*[3*1]=[4x1]
 
         output = sigmoid(xw)
 
-        error = training_output - output
+        error = y - output
         error_arr[i] = sum(error)
 
         adjustments = error * sigmoid_derivative(output)
 
-        weights = weights + np.dot(input.T,adjustments)
-        # weights = normalize(weights)
+        w = w + np.dot(dat.T,adjustments)
+        # w = normalize(w)
 
-    print "Weights after training: "
-    print weights
+    print "weights after training: "
+    print w
     print
 
     print "percent error:"
@@ -188,12 +279,18 @@ def part_2b():
     print percent_error[0]
     print
 
-    y_hat = np.dot(input,weights)
+    y_hat = np.dot(dat,w)
 
+
+    """
+    **********************************************
+    plotting
+    **********************************************
+    """
     fig1 = plt.figure()
     plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
     plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
-    # plt.plot(np.cross(weights.T,input))
+    # plt.plot(np.cross(w.T,dat))
     plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
     for i in range(len(y_hat)):
     	if (y_hat[i]<0):
@@ -216,6 +313,11 @@ def part_2b():
 
 def part_2c():
 
+    """
+    **********************************************
+    create training dataset
+    **********************************************
+    """
     tempx = np.random.normal(6,2,size=100)
     tempy = np.random.normal(2,1,size=100)
     dat1 = np.array((tempx,tempy)).T
@@ -232,6 +334,7 @@ def part_2c():
     dat = np.append(dat, dat3, axis=0)
 
     """
+    matlab code
     y(:,1) = [ones(100,1); zeros(100,1); zeros(100,1)];   % the class labels as three dimensional outputs
     y(:,2) = [zeros(100,1); ones(100,1); zeros(100,1)]';
     y(:,3) = [zeros(100,1); zeros(100,1); ones(100,1)]';
@@ -244,80 +347,132 @@ def part_2c():
     y = np.append(col1,col2,axis=1)
     y = np.append(y,col3,axis=1)
 
+    # shuffle dataset
     # temp = np.append(dat,y,axis=1)
     # np.random.shuffle(temp)
     # dat = temp[:,:2]
-    # tempy = temp[:,-1]
-    # y = np.expand_dims(tempy,axis=1)
+    # tempy = temp[:,-3:]
 
+    """
+    **********************************************
+    network parameters
+    **********************************************
+    """
     # print y
-    epochs = 30
-    weights = np.random.random((3,3)) # starting weight for each column (synapse)
-    training_output = y
+    epochs = 3000
+    w = np.random.random((3,3)) # starting weight for each column (synapse)
     bias = np.ones((len(dat),1)) # bias
-    error_arr = np.zeros((epochs,1))
+    error_arr = np.zeros((epochs,3))
+    max=0
 
-    print "Starting Weights: "
-    print weights
+
+    """
+    **********************************************
+    perceptron single layer network
+    **********************************************
+    """
+    print "Starting weights: "
+    print w
     print
 
     for i in range(epochs):
         """
         neuron
         """
-        input = dat
-        input = np.append(input,bias,axis=1)
-        xw = np.dot(input,weights)
+        dat = np.append(dat,bias,axis=1)
+        xw = np.dot(dat,w)
 
         output = sigmoid(xw)
 
-        error = training_output - output
-        print error.shape
-        error_arr[i] = sum(error[i])
+        error = y - output
+        for j in range(len(output)):
+            error_arr[i] = sum(error[j])
 
         adjustments = error * sigmoid_derivative(output)
 
-        weights = weights + np.dot(input.T,adjustments)
-        # weights = normalize(weights)
+        w = w + np.dot(dat.T,adjustments)
+        # w = normalize(w)
 
-    print "Weights after training: "
-    print weights
+    print "weights after training: "
+    print w
     print
 
-    print "percent error:"
+    print error.shape
+
     percent_error=(sum(y-np.round(output,0))/epochs)*100
-    print percent_error[0]
+    # print percent_error[0]
+    for i in range(len(percent_error)):
+        percent_error = abs(np.round(percent_error,2))
+    print "percent error y_1:" + '%.2f' % percent_error[0]
+    print
+    print "percent error y_2:" + '%.2f' % percent_error[1]
+    print
+    print "percent error y_3:" + '%.2f' % percent_error[2]
     print
 
-    y_hat = np.dot(input,weights)
+    y_hat = np.dot(dat,w)
 
-    for i in range(len(y_hat)):
-        for j in range(3):
-            if (y_hat[i][j] > 0):
+    for i in range(y_hat.shape[0]):
+
+        max=y_hat[i][0]
+
+        for j in range(y_hat.shape[1]):
+
+            if (y_hat[i][j]>max):
+                max = y_hat[i][j]
+
+        for j in range(y_hat.shape[1]):
+
+            if (y_hat[i][j]==max):
                 y_hat[i][j] = 1
             else:
                 y_hat[i][j] = 0
 
+    print y_hat
+    error_total = 0
+    percent_err = np.round((y_hat - output),0)
+    for i in range(len(percent_err)):
+        if sum(percent_err[i]>0):
+            error_total += sum(percent_err[i])
 
-    # print y_hat
+    print "Final Network Error: " + str(np.round((error_total/len(output))*100,2))
 
-    # fig1 = plt.figure()
-    # plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
-    # plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
-    # plt.plot(dat3.T[0], dat3.T[1], "go", label="dat3")
-    # plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
-    # plt.title("Linear Classification: Part C")
-    # plt.xlim(-5,10)
-    # plt.ylim(-6,12)
-    # plt.legend()
+
+    """
+    **********************************************
+    plotting
+    **********************************************
+    """
+    fig1 = plt.figure()
+    plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
+    plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
+    plt.plot(dat3.T[0], dat3.T[1], "go", label="dat3")
+    plt.plot((sum(y-np.round(output,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(output,0))/200)*100))
+
+    for i in range(len(y_hat)):
+        if (y_hat[i][0]==1):
+            plt.plot(dat[i][0], dat[i][1],"r.")
+        elif (y_hat[i][1]==1):
+            plt.plot(dat[i][0], dat[i][1],"b.")
+        elif (y_hat[i][2]==1):
+            plt.plot(dat[i][0], dat[i][1],"g.")
+
+    plt.title("Linear Classification: Part C")
+    plt.xlim(-5,10)
+    plt.ylim(-6,12)
+    plt.legend()
 
     fig2 = plt.figure()
-    plt.plot(abs(error_arr), label="Error")
+    print error_arr
+    plt.plot(abs(error_arr[0]),label="y_0 Error")
+    plt.plot(abs(error_arr[1]),label="y_1 Error")
+    plt.plot(abs(error_arr[2]),label="y_2 Error")
     plt.title("Network Percent error")
     plt.xlabel("Epoch")
     plt.ylabel("Error Percent")
-    # plt.xlim(-2,epochs)
+    plt.xlim(-2,epochs)
     # plt.ylim(-2,110)
+    plt.ylim(0,1)
     plt.legend()
 
 def main():
