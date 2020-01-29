@@ -258,11 +258,12 @@ def part_2b():
     network parameters
     **********************************************
     """
-    epochs = 50
+    epochs = 500
     w = np.random.random((3,1)) # starting weight for each column (synapse)
     bias = np.ones((len(dat),1)) # bias
-    error_arr = np.zeros((epochs,1))
-
+    error_arr1 = np.zeros((epochs,1))
+    error_arr2 = np.zeros((epochs,1))
+    error_arr3 = np.zeros((epochs,1))
 
     """
     **********************************************
@@ -284,12 +285,24 @@ def part_2b():
         y_hat = sigmoid(xw)
 
         error = y - y_hat
-        error_arr[i] = sum(error)
+        error_arr1[i] = sum(error)
 
         adjustments = error * sigmoid_derivative(y_hat)
 
         w = w + np.dot(input.T,adjustments)
         # w = normalize(w)
+
+        # Validation phase
+        v_input = v_dat
+        v_bias = np.ones((len(v_dat),1)) # bias
+        v_input = np.append(v_input,v_bias,axis=1)
+
+        v_y_hat = np.dot(v_input,w)
+
+        v_error = abs(v_y-v_y_hat)
+
+        error_arr2[i] = sum(v_error)
+        # error_arr3[i] = abs(y_hat - v_y_hat)
 
     print "Weights After Training: "
     print w
@@ -311,25 +324,56 @@ def part_2b():
     fig1 = plt.figure()
     plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
     plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
+    plt.title("Part B: 2 Classes, Initial Dataset")
+    plt.xlim(-5,10)
+    plt.ylim(-4,14)
+    plt.legend()
+
+    fig2 = plt.figure()
+    plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
+    plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
     # plt.plot((sum(y-np.round(y_hat,0))/epochs)*100,"wo",label="percent error: " + str(percent_error))# + str((sum(y-np.round(y_hat,0))/200)*100))
     for i in range(len(y_hat)):
     	if (y_hat[i]<0):
     		plt.plot(dat[i][0], dat[i][1],"b.")
     	else:
     		plt.plot(dat[i][0], dat[i][1],"r.")
-    plt.title("Part B: 2 classes, sigmoidal output")
+    plt.title("Part B: 2 Classes, Sigmoidal Output")
     plt.xlim(-5,10)
     plt.ylim(-4,14)
     plt.legend()
 
-    fig2 = plt.figure()
-    plt.plot(abs(error_arr), label="Error")
+    fig3 = plt.figure()
+    plt.plot(abs(error_arr1), label="Error")
     plt.title("Network Percent error")
     plt.xlabel("Epoch")
     plt.ylabel("Error Percent")
     plt.xlim(-2,epochs)
     plt.ylim(-2,110)
     plt.legend()
+
+    fig4 = plt.figure()
+    plt.plot(abs(error_arr1), label="Error")
+    plt.title("Training Error")
+    plt.xlabel("Epoch")
+    plt.ylabel("Error Percent")
+    plt.legend()
+
+    fig5 = plt.figure()
+    plt.plot(abs(error_arr1), label="Error")
+    plt.title("Validation Error")
+    plt.xlabel("Epoch")
+    plt.ylabel("Error Percent")
+    plt.legend()
+
+    fig6 = plt.figure()
+    plt.plot(abs(error_arr1), label="Error")
+    plt.title("Network Error")
+    plt.xlabel("Epoch")
+    plt.ylabel("Error Percent")
+    plt.legend()
+
+
 
 def part_2c():
     """
@@ -378,8 +422,7 @@ def part_2c():
     # np.random.shuffle(temp)
     # dat = temp[:,:2]
     # tempy = temp[:,-3:]
-
-    print y
+    # print y
 
     """
     **********************************************
@@ -416,7 +459,6 @@ def part_2c():
     np.random.shuffle(v_temp)
     v_dat = v_temp[:,:2]
     v_tempy = v_temp[:,-3:]
-
     print v_y
 
     """
@@ -469,30 +511,29 @@ def part_2c():
 
     y_hat = np.dot(input,w)
 
-    for i in range(y_hat.shape[0]):
+    # for i in range(y_hat.shape[0]):
+    #
+    #     max=y_hat[i][0]
+    #
+    #     for j in range(y_hat.shape[1]):
+    #
+    #         if (y_hat[i][j]>max):
+    #             max = y_hat[i][j]
+    #
+    #     for j in range(y_hat.shape[1]):
+    #
+    #         if (y_hat[i][j]==max):
+    #             y_hat[i][j] = 1
+    #         else:
+    #             y_hat[i][j] = 0
 
-        max=y_hat[i][0]
-
-        for j in range(y_hat.shape[1]):
-
-            if (y_hat[i][j]>max):
-                max = y_hat[i][j]
-
-        for j in range(y_hat.shape[1]):
-
-            if (y_hat[i][j]==max):
-                y_hat[i][j] = 1
-            else:
-                y_hat[i][j] = 0
-
-    print y_hat
     error_total = 0
-    percent_err = np.round((y_hat - output),0)
+    percent_err = np.round((y_hat - y),0)
     for i in range(len(percent_err)):
         if sum(percent_err[i]>0):
             error_total += sum(percent_err[i])
 
-    print "Final Network Error: " + str(np.round((error_total/len(output))*100,2))
+    print "Final Network Error: " + str(np.round((error_total/len(y))*100,2))
 
 
     """
@@ -500,7 +541,7 @@ def part_2c():
     plotting
     **********************************************
     """
-    print y_hat
+    # print y_hat
 
     fig1 = plt.figure()
     plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
@@ -522,7 +563,7 @@ def part_2c():
     plt.legend()
 
     fig2 = plt.figure()
-    print error_arr
+    print error_total.shape
     plt.plot(abs(error_arr[0]),label="y_0 Error")
     plt.plot(abs(error_arr[1]),label="y_1 Error")
     plt.plot(abs(error_arr[2]),label="y_2 Error")
@@ -531,13 +572,13 @@ def part_2c():
     plt.ylabel("Error Percent")
     plt.xlim(-2,epochs)
     # plt.ylim(-2,110)
-    plt.ylim(0,1)
+    # plt.ylim(0,1)
     plt.legend()
 
 def main():
     # part_2a()
-    # part_2b()
-    part_2c()
+    part_2b()
+    # part_2c()
     plt.show()
 
 if __name__ == '__main__':
