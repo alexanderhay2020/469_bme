@@ -99,11 +99,11 @@ def main():
                 tempx2 += input[i][0]
                 tempy2 += input[i][1]
 
-        tempw1[0][0] = tempx1/sum(cluster)
-        tempw1[0][1] = tempy1/sum(cluster)
+        tempw1[0][0] = tempx1/(nsamp-sum(cluster))
+        tempw1[0][1] = tempy1/(nsamp-sum(cluster))
 
-        tempw2[0][0] = tempx2/(nsamp-sum(cluster))
-        tempw2[0][1] = tempy2/(nsamp-sum(cluster))
+        tempw2[0][0] = tempx2/sum(cluster)
+        tempw2[0][1] = tempy2/sum(cluster)
 
         diff1 = sum(sum(abs(tempw1 - w1)))
         diff2 = sum(sum(abs(tempw2 - w2)))
@@ -113,13 +113,13 @@ def main():
 
         iter += 1
 
-        fig2 = plt.figure()
+        fig1 = plt.figure()
         plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 initial mean")
         plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 initial mean")
         plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")
         plt.plot(input.T[0,50:], input.T[1,50:], "b.", label="group 2")
         plt.title("Part 2: K-Means Clustering Iteration " + str(iter))
-        plt.legend()
+        plt.pause(0.1)
 
     fig2 = plt.figure()
     plt.plot(tempw1.T[0], tempw1.T[1], "rx", label="group 1 initial mean")
@@ -128,7 +128,7 @@ def main():
     plt.plot(input.T[0,50:], input.T[1,50:], "b.", label="group 2")
     plt.title("Part 2: K-Means Clustering Final Data")
     plt.legend()
-    
+
 
 if __name__ == '__main__':
     main()
