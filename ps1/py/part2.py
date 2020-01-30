@@ -21,7 +21,7 @@ def sigmoid_derivative(x):
     args: x - some number
     return: derivative of sigmoid given x
     """
-    sig_prime = x*(1-x)
+    sig_prime = sigmoid()x*(1-sigmoid(x))
 
     return sig_prime
 

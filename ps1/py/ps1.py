@@ -338,7 +338,7 @@ def part_2a():
     plotting
     **********************************************
     """
-    fiG0 = plt.figure()
+    fig0 = plt.figure()
     plt.plot(dat1.T[0], dat1.T[1], "ro", label="dat1")
     plt.plot(dat2.T[0], dat2.T[1], "bo", label="dat2")
 
