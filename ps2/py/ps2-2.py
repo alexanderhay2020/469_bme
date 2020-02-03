@@ -5,29 +5,9 @@ https://medium.com/machine-learning-algorithms-from-scratch/k-means-clustering-f
 """
 
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 
 np.random.seed(1)
-
-def sigmoid(x):
-    """
-    args: x - some number
-
-    return: some value between 0 and 1 based on sigmoid function
-    """
-
-    return 1/(1+np.exp(-x))
-
-
-def sigmoid_derivative(x):
-    """
-    args: x - some number
-
-    return: derivative of sigmiod given x
-    """
-    return sigmoid(x)*(1-sigmoid(x))
-
 
 def main():
     """
@@ -60,6 +40,9 @@ def main():
     w1 = np.mean(input) + np.random.normal(-1, 1, (1,2))
     w2 = np.mean(input) + np.random.normal(-1, 1, (1,2))
 
+    old1 = w1
+    old2 = w2
+
     tempw1 = np.mean(input) + np.random.normal(-1, 1, (1,2))
     tempw2 = np.mean(input) + np.random.normal(-1, 1, (1,2))
 
@@ -73,12 +56,15 @@ def main():
     fig0 = plt.figure()
     plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")
     plt.plot(input.T[0,50:], input.T[1,50:], "b.", label="group 2")
-    plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 initial mean")
-    plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 initial mean")
-    plt.title("Part 2: K-Means Clustering Initial Data")
+    plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 mean")
+    plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 mean")
+    plt.title("Part 2: K-Means Clustering Iteration " + str(iter))
     plt.legend()
+    plt.draw()
+    plt.pause(0.5)
 
     while (diff1 > 0) & (diff2 > 0):
+
         tempx1 = 0
         tempx2 = 0
         tempy1 = 0
@@ -115,22 +101,24 @@ def main():
         w1 = tempw1
         w2 = tempw2
 
-        iter += 1
+        line1x = [old1.T[0], w1.T[0]]
+        line1y = [old1.T[1], w1.T[1]]
+        line2x = [old2.T[0], w2.T[0]]
+        line2y = [old2.T[1], w2.T[1]]
 
-        fig1 = plt.figure()
-        plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")s
-        plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 initial mean")
-        plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 initial mean")
+        plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")
+        plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 mean")
+        plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 mean")
+        plt.plot(line1x, line1y, "b")
+        plt.plot(line2x, line2y, "r")
         plt.title("Part 2: K-Means Clustering Iteration " + str(iter))
-        plt.pause(0.1)
+        plt.draw()
+        plt.pause(0.5)
 
-    fig2 = plt.figure()
-    plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")
-    plt.plot(input.T[0,50:], input.T[1,50:], "b.", label="group 2")
-    plt.plot(tempw1.T[0], tempw1.T[1], "rx", label="group 1 initial mean")
-    plt.plot(tempw2.T[0], tempw2.T[1], "bx", label="group 2 initial mean")
-    plt.title("Part 2: K-Means Clustering Final Data")
-    plt.legend()
+        old2[0] = w2[0]
+        old1[0] = w1[0]
+
+        iter += 1
 
 
 if __name__ == '__main__':
