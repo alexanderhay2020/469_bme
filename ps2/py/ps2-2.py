@@ -1,5 +1,9 @@
 #!/usr/bin/env python2
 
+"""
+https://medium.com/machine-learning-algorithms-from-scratch/k-means-clustering-from-scratch-in-python-1675d38eee42
+"""
+
 import numpy as np
 import math
 import matplotlib.pyplot as plt
