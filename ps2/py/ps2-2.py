@@ -61,7 +61,7 @@ def main():
     plt.title("Part 2: K-Means Clustering Iteration " + str(iter))
     plt.legend()
     plt.draw()
-    plt.pause(0.5)
+    plt.pause(0.3)
 
     while (diff1 > 0) & (diff2 > 0):
 
@@ -113,7 +113,7 @@ def main():
         plt.plot(line2x, line2y, "r")
         plt.title("Part 2: K-Means Clustering Iteration " + str(iter))
         plt.draw()
-        plt.pause(0.5)
+        plt.pause(0.3)
 
         old2[0] = w2[0]
         old1[0] = w1[0]
