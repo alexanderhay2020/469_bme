@@ -107,7 +107,7 @@ def main():
     lastdw = 0*w
     lastdv = 0*v
 
-    epochs = 200000
+    epochs = 20000
 
     for i in range(len(output)):
         print str(i+1) + str(output[i])
