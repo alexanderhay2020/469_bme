@@ -71,10 +71,10 @@ def main():
     cluster = np.empty(nsamp)
 
     fig0 = plt.figure()
-    plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 initial mean")
-    plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 initial mean")
     plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")
     plt.plot(input.T[0,50:], input.T[1,50:], "b.", label="group 2")
+    plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 initial mean")
+    plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 initial mean")
     plt.title("Part 2: K-Means Clustering Initial Data")
     plt.legend()
 
@@ -118,18 +118,17 @@ def main():
         iter += 1
 
         fig1 = plt.figure()
+        plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")s
         plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 initial mean")
         plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 initial mean")
-        plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")
-        plt.plot(input.T[0,50:], input.T[1,50:], "b.", label="group 2")
         plt.title("Part 2: K-Means Clustering Iteration " + str(iter))
         plt.pause(0.1)
 
     fig2 = plt.figure()
-    plt.plot(tempw1.T[0], tempw1.T[1], "rx", label="group 1 initial mean")
-    plt.plot(tempw2.T[0], tempw2.T[1], "bx", label="group 2 initial mean")
     plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")
     plt.plot(input.T[0,50:], input.T[1,50:], "b.", label="group 2")
+    plt.plot(tempw1.T[0], tempw1.T[1], "rx", label="group 1 initial mean")
+    plt.plot(tempw2.T[0], tempw2.T[1], "bx", label="group 2 initial mean")
     plt.title("Part 2: K-Means Clustering Final Data")
     plt.legend()
 
