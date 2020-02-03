@@ -101,7 +101,6 @@ def main():
 
     # mu = .05; p = .9;   % a suggested step and momentum size
     # lastdW = 0*W;  lastdV = 0*V;   % initialize the previous weight change variables
-
     mu = .05                                                        # eta       learning rate
     p = .9                                                          # alpha     momentum rate
     lastdw = 0*w
@@ -115,23 +114,16 @@ def main():
 
     for j in range(epochs):
 
-        # Feed forward through layers 0, 1, and 2
         l0 = input
         l1 = sigmoid(np.dot(l0,w))
         l2 = sigmoid(np.dot(l1,v))
 
-        # how much did we miss the target value?
         l2_error = output - l2
 
-        # in what direction is the target value?
-        # were we really sure? if so, don't change too much.
         l2_delta = l2_error*sigmoid_derivative(l2)
 
-        # how much did each l1 value contribute to the l2 error (according to the weights)?
         l1_error = l2_delta.dot(v.T)
 
-        # in what direction is the target l1?
-        # were we really sure? if so, don't change too much.
         l1_delta = l1_error * sigmoid_derivative(l1)
 
         v += l1.T.dot(l2_delta)
@@ -141,7 +133,6 @@ def main():
         print str(i+1) + str(l2[i])
 
     print "Error:" + str(np.mean(np.abs(l2_error)))
-
 
 
 if __name__ == '__main__':
