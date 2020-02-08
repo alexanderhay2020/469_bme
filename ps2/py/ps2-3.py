@@ -8,7 +8,7 @@ Autoencoder
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-import pytorch
+# import pytorch
 
 np.random.seed(1)
 
@@ -96,7 +96,6 @@ def main():
     # pi2 = .5;
     pi1 = 0.5
     pi2 = 0.5
-
 
     # rad1 = norminv(.75,0,2*s1);                                     # x = norminv(p,mu,sigma)
     # rad2 = norminv(.75,0,2*s2);

@@ -62,7 +62,7 @@ def main():
     plt.plot(input.T[0,50:], input.T[1,50:], "b.", label="group 2")
     plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 mean")
     plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 mean")
-    plt.title("Part 2: K-Means Clustering Iteration " + str(iter))
+    plt.title("Part 2: K-Means Clustering Iteration " + str(iter+1))
     plt.legend()
     plt.draw()
     plt.pause(0.3)
@@ -77,6 +77,8 @@ def main():
         tempx2 = 0
         tempy1 = 0
         tempy2 = 0
+        max1 = 0
+        max2 = 0
 
         # classifies data
         for i in range(nsamp):
@@ -97,6 +99,15 @@ def main():
                 tempx2 += input[i][0]
                 tempy2 += input[i][1]
 
+        for i in range(nsamp):
+            euclidian1 = np.sqrt((w1.T[0] - input[i][0])**2 + (w1.T[1] - input[i][1])**2)
+            euclidian2 = np.sqrt((w2.T[0] - input[i][0])**2 + (w2.T[1] - input[i][1])**2)
+            if (euclidian1 > max1):
+                max1 = euclidian1
+            if (euclidian2 > max2):
+                max2 = euclidian2
+
+
         tempw1[0][0] = tempx1/(nsamp-sum(cluster))
         tempw1[0][1] = tempy1/(nsamp-sum(cluster))
 
@@ -114,12 +125,16 @@ def main():
         line2x = [old2.T[0], w2.T[0]]
         line2y = [old2.T[1], w2.T[1]]
 
+        ax = plt.gca()
         plt.plot(input.T[0,:50], input.T[1,:50], "r.", label="group 1")
         plt.plot(w1.T[0], w1.T[1], "rx", label="group 1 mean")
         plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 mean")
         plt.plot(line1x, line1y, "b")
         plt.plot(line2x, line2y, "r")
-
+        circle1 = plt.Circle((w1.T[0], w1.T[1]), np.sqrt(max1), color='r', fill=False)
+        circle2 = plt.Circle((w2.T[0], w2.T[1]), np.sqrt(max2), color='b', fill=False)
+        ax.add_artist(circle1)
+        ax.add_artist(circle2)
         plt.draw()
         plt.pause(0.3)
 
