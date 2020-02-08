@@ -8,31 +8,32 @@ import matplotlib.pyplot as plt
 np.random.seed(1)
 
 class NeuralNetwork:
-    mu = .05      # eta       learning rate
-    p = .9
+    LEARNING_RATE = 0.5
 
     def __init__(self, num_inputs, num_hidden, num_outputs):
 
         self.num_inputs = num_inputs
-        self.hidden = NeuronLayer(num_hidden)
-        self.output = NeuronLayer(num_outputs)
+
+        self.hidden_layer = NeuronLayer(num_hidden)
+        self.output_layer = NeuronLayer(num_outputs)
 
         self.init_weights()
 
-    # w = unifrnd(-1,1,ninput,nhidden);  % initialize weight matrices
-    # v = unifrnd(-1,1,nhidden,noutput);
-    def init_weights(self):
-        for j in range(len(self.hidden.neurons)):
-            for k in range(self.num_inputs):
-                self.hidden.neurons[j].weights.append(np.random.normal(-1, 1))
 
-        for i in range(len(self.output.neurons)):
-            for j in range(len(self.hidden.neurons)):
-                self.output.neurons[i].weights.append(np.random.normal(-1, 1))
+    def init_weights(self):
+        for h in range(len(self.hidden_layer.neurons)):
+            for i in range(self.num_inputs):
+                self.hidden_layer.neurons[h].weights.append(random.random())
+
+        for o in range(len(self.output_layer.neurons)):
+            for h in range(len(self.hidden_layer.neurons)):
+                self.output_layer.neurons[o].weights.append(random.random())
+
 
     def feed_forward(self, inputs):
-        hidden_layer_outputs = self.hidden.feed_forward(inputs)
-        return self.output.feed_forward(hidden_layer_outputs)
+        hidden_layer_outputs = self.hidden_layer.feed_forward(inputs)
+        # print hidden_layer_outputs
+        return self.output_layer.feed_forward(hidden_layer_outputs)
 
 
     # Uses online learning, ie updating the weights after each training case
@@ -40,37 +41,43 @@ class NeuralNetwork:
         self.feed_forward(training_inputs)
 
         # 1. Output neuron deltas
-        # dE/dz
-        output_delta = [0] * len(self.output.neurons)
-        for i in range(len(self.output.neurons)):
-            output_delta[i] = self.output.neurons[i].calculate_pd_error_wrt_total_net_input(training_outputs[i])
+        output_delta = [0] * len(self.output_layer.neurons)
+        for o in range(len(self.output_layer.neurons)):
+
+            # dE/dz
+            output_delta[o] = self.output_layer.neurons[o].calculate_pd_error_wrt_total_net_input(training_outputs[o])
 
         # 2. Hidden neuron deltas
-        # dE/dy = Sigma dE/dz * dz/dy = Sigma dE/dz * w
-        # dE/dz = dE/dy * dz/d
-        hidden_delta = [0] * len(self.hidden.neurons)
-        for j in range(len(self.hidden.neurons)):
+        hidden_delta = [0] * len(self.hidden_layer.neurons)
+        for h in range(len(self.hidden_layer.neurons)):
+
+            # We need to calculate the derivative of the error with respect to the output of each hidden layer neuron
+            # dE/dy = Sigma dE/dz * dz/dy = Sigma dE/dz * w
             d_error_wrt_hidden_neuron_output = 0
-            for i in range(len(self.output.neurons)):
-                d_error_wrt_hidden_neuron_output += output_delta[i] * self.output.neurons[i].weights[j]
+            for o in range(len(self.output_layer.neurons)):
+                d_error_wrt_hidden_neuron_output += output_delta[o] * self.output_layer.neurons[o].weights[h]
 
-            hidden_delta[j] = d_error_wrt_hidden_neuron_output * self.hidden.neurons[j].sigmoid_derivative()
-
+            # dE/dz = dE/dy * dz/d
+            hidden_delta[h] = d_error_wrt_hidden_neuron_output * self.hidden_layer.neurons[h].sigmoid_derivative()
         # 3. Update output neuron weights
-        # dE/dw = dE/dz * dz/dw
-        # delta_w = a * dE/dw
-        for i in range(len(self.output.neurons)):
-            for w_o in range(len(self.output.neurons[i].weights)):
-                pd_error_wrt_weight = output_delta[i] * self.output.neurons[i].calculate_pd_total_net_input_wrt_weight(w_o)
-                self.output.neurons[i].weights[w_o] -= self.mu * pd_error_wrt_weight
+        for o in range(len(self.output_layer.neurons)):
+            for w_ho in range(len(self.output_layer.neurons[o].weights)):
+
+                # dE/dw = dE/dz * dz/dw
+                pd_error_wrt_weight = output_delta[o] * self.output_layer.neurons[o].calculate_pd_total_net_input_wrt_weight(w_ho)
+
+                # delta_w = a * dE/dw
+                self.output_layer.neurons[o].weights[w_ho] -= self.LEARNING_RATE * pd_error_wrt_weight
 
         # 4. Update hidden neuron weights
-        # dE/dw = dE/dz * dz/dw
-        # delta_w = a * dE/dw
-        for j in range(len(self.hidden.neurons)):
-            for w_h in range(len(self.hidden.neurons[j].weights)):
-                pd_error_wrt_weight = hidden_delta[j] * self.hidden.neurons[j].calculate_pd_total_net_input_wrt_weight(w_h)
-                self.hidden.neurons[j].weights[w_h] -= self.mu * pd_error_wrt_weight
+        for h in range(len(self.hidden_layer.neurons)):
+            for w_ih in range(len(self.hidden_layer.neurons[h].weights)):
+
+                # dE/dw = dE/dz * dz/dw
+                pd_error_wrt_weight = hidden_delta[h] * self.hidden_layer.neurons[h].calculate_pd_total_net_input_wrt_weight(w_ih)
+
+                # delta_w = a * dE/dw
+                self.hidden_layer.neurons[h].weights[w_ih] -= self.LEARNING_RATE * pd_error_wrt_weight
 
 
     def calculate_total_error(self, training_sets):
@@ -79,8 +86,8 @@ class NeuralNetwork:
             training_inputs, training_outputs = training_sets[t]
             self.feed_forward(training_inputs)
             for o in range(len(training_outputs)):
-                total_error += self.output.neurons[o].calc_MSE(training_outputs[o])
-                # print self.output.neurons[o]
+                total_error += self.output_layer.neurons[o].calc_MSE(training_outputs[o])
+                # print self.output_layer.neurons[o]
         return total_error
 
 
@@ -89,11 +96,11 @@ class NeuralNetwork:
         print('* Inputs: {}'.format(self.num_inputs))
         print('------')
         print('Hidden Layer')
-        self.hidden.inspect()
+        self.hidden_layer.inspect()
         print('------')
         print
         print('* Output Layer')
-        self.output.inspect()
+        self.output_layer.inspect()
         print('------')
 
 
@@ -176,28 +183,16 @@ class Neuron:
 
 
 def main():
-    """
-    %% non-linearly separable classification - back propagation
-    sd = .85;
-    x1 = [normrnd(0,sd,50,1); normrnd(0,sd,50,1);  normrnd(0,sd,50,1)];
-    x2 = [normrnd(0,sd,50,1); normrnd(5,sd,50,1);   normrnd(10,sd,50,1)];
-    x3 = [ones(150,1)];
-    y1 = [ones(50,1) zeros(50,1) zeros(50,1);  zeros(50,1) ones(50,1) zeros(50,1); zeros(50,1) zeros(50,1) ones(50,1) ];
-    input = [x1 x2 x3];
-    output = y1;
-    nsamp = length(x1);
-    ninput = 3;
-    nhidden = 4;
-    noutput = 3;
-    mu = .05; p = .9;   % a suggested step and momentum size
-    lastdW = 0*W;  lastdV = 0*V;   % initialize the previous weight change variables
-    % now do back prop
-    """
 
-    # sd = .85;
-    std_dev = 0.85
 
-    # x1 = [normrnd(0,sd,50,1); normrnd(0,sd,50,1);  normrnd(0,sd,50,1)];
+    std_dev = 0.85                                                  # standard deviation
+    epochs = 10000
+    ninput = 3
+    nhidden = 4
+    noutput = 3
+    mu = .05                                                        # eta       learning rate
+    p = .9
+
     x1 = np.random.normal(0, std_dev, (50,1))                       # (mean, std_dev, size))
     x1 = np.append(x1, np.random.normal(0, std_dev, 50))
     x1 = np.append(x1, np.random.normal(0, std_dev, 50))
@@ -226,23 +221,19 @@ def main():
     # output = y1;
     output = y1
 
-    epochs = 15000
     nsamp = len(input)
-    ninput = 3
-    nhidden = 4
-    noutput = 3
 
     training_set = [None]*nsamp
     total_error = [None]*epochs
     for i in range(nsamp):
         training_set[i] = [list(input[i]),list(output[i])]
 
-    nn = NeuralNetwork(ninput, nhidden, noutput)
+    nn = NeuralNetwork(len(input[0]), 4, len(output[0]))
     for i in range(epochs):
         index = random.randint(0,len(input)-1)
         nn.train(list(input[index]), list(output[index]))
         if i % 100 == 0:
-            print "epoch: " + str(i) + "/" + str(epochs)
+            print str(i) + "/" + str(epochs)
         total_error[i] = nn.calculate_total_error(training_set)
 
     fig0 = plt.figure()

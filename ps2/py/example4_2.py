@@ -23,11 +23,11 @@ def forward_prop(model, a0):
     # Do the first Linear step
     z1 = a0.dot(w) + b1
     # Put it through the first activation function
-    a1 = np.tanh(z1)
+    a1 = sigmoid(z1)
     # Second linear step
     z2 = a1.dot(v) + b2
     # Put through second activation function
-    a2 = np.tanh(z2)
+    a2 = sigmoid(z2)
     #Third linear step
     #Store all results in these values
     cache = {'a0':a0,'z1':z1,'a1':a1,'z2':z2,'a2':a2}
@@ -94,12 +94,10 @@ def initialize_parameters(ninput, nhidden, noutput):
     w = np.random.uniform(-1, 1, size=(ninput, nhidden))             # min, max, size
 
     # First layer bias
-
     b1 = np.ones((150, nhidden))
 
     # Second layer weights
     v = np.random.uniform(-1, 1, size=(nhidden, noutput))
-
 
     # Second layer bias
     b2 = np.ones((150, noutput))
@@ -123,7 +121,9 @@ def train(model,X_,y_,learning_rate, epochs, print_loss=False):
         grads = backward_prop(model,cache,y_)
         # Gradient descent parameter update
         # Assign new parameters to the model
+
         model = update_parameters(model=model,grads=grads,learning_rate=learning_rate)
+
         if i % 1000 == 0:
           print("iteration %i: " %(i))
         # Pring loss & accuracy every 100 iterations
@@ -139,13 +139,13 @@ def train(model,X_,y_,learning_rate, epochs, print_loss=False):
 
 def predict(model, input):
     # Do forward pass
-    # c = forward_prop(model,x)
+    c = forward_prop(model, input)
     #get y_hat
-    # y_hat = np.argmax(c['a2'], axis=1)
+    y_hat = np.argmax(c['a2'], axis=1)
 
-    w, v = model['w'], model['v']
-    y_hat = np.dot(input, w)
-    y_hat = np.dot(y_hat, v)
+    # w, v = model['w'], model['v']
+    # y_hat = np.dot(input, w)
+    # y_hat = np.dot(y_hat, v)
 
     return y_hat
 
@@ -244,7 +244,6 @@ def main():
     model = train(model, input, output, mu, epochs, print_loss=True)
     # plt.plot(losses)
 
-
     y_hat = predict(model, input)
 
     print "w"
@@ -255,17 +254,23 @@ def main():
     print
 
     index = 0
-    for i in range(len(y_hat)):
-        max = y_hat[i][0]
-        for j in range(len(y_hat[i])):
-            if (y_hat[i][j] >= max):
-                max = y_hat[i][j]
-                index = j
-        for k in range(len(y_hat[i])):
-            if (k == index):
-                y_hat[i][k] = 1
-            else:
-                y_hat[i][k] = 0
+
+    # Do forward pass
+    c = forward_prop(model, input)
+    #get y_hat
+    y_hat = c['a2']
+
+    # for i in range(len(y_hat)):
+    #     max = y_hat[i][0]
+    #     for j in range(len(y_hat[i])):
+    #         if (y_hat[i][j] >= max):
+    #             max = y_hat[i][j]
+    #             index = j
+    #     for k in range(len(y_hat[i])):
+    #         if (k == index):
+    #             y_hat[i][k] = 1
+    #         else:
+    #             y_hat[i][k] = 0
 
 
     print "y_hat adjusted"
@@ -277,11 +282,11 @@ def main():
         elif (i>97):
             print str(i+1) + " " + (str(y_hat[i]))
 
-    print
+    # print
 
-    print "percent error:"
-    error = (sum(abs(y_hat - output))/150)*100
-    print error
+    # print "percent error:"
+    # error = (sum(abs(y_hat - output))/150)*100
+    # print error
 
 
 if __name__ == '__main__':
