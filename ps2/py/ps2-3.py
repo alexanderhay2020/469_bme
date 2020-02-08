@@ -8,7 +8,7 @@ Autoencoder
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-import scipy.stats as stats
+import pytorch
 
 np.random.seed(1)
 
@@ -125,7 +125,43 @@ def main():
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     AUTOENCODER
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    while (diff1 > 0) & (diff2 > 0):
 
+        tempx1 = 0
+        tempx2 = 0
+        tempy1 = 0
+        tempy2 = 0
+
+        # classifies data
+        for i in range(nsamp):
+            euclidian1 = np.sqrt((w1.T[0] - input[i][0])**2 + (w1.T[1] - input[i][1])**2)
+            euclidian2 = np.sqrt((w2.T[0] - input[i][0])**2 + (w2.T[1] - input[i][1])**2)
+
+            if euclidian1 < euclidian2:
+                cluster[i] = 0
+            else:
+                cluster[i] = 1
+
+        # moves cluster mean
+        for i in range(nsamp):
+            if cluster[i] == 0:
+                tempx1 += input[i][0]
+                tempy1 += input[i][1]
+            elif cluster[i] ==1:
+                tempx2 += input[i][0]
+                tempy2 += input[i][1]
+
+        tempw1[0][0] = tempx1/(nsamp-sum(cluster))
+        tempw1[0][1] = tempy1/(nsamp-sum(cluster))
+
+        tempw2[0][0] = tempx2/sum(cluster)
+        tempw2[0][1] = tempy2/sum(cluster)
+
+        diff1 = sum(sum(abs(tempw1 - w1)))
+        diff2 = sum(sum(abs(tempw2 - w2)))
+
+        w1 = tempw1
+        w2 = tempw2
 
 
 

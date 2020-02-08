@@ -70,7 +70,7 @@ def main():
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     K-MEANS
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    
+
     while (diff1 > 0) & (diff2 > 0):
 
         tempx1 = 0
@@ -119,7 +119,7 @@ def main():
         plt.plot(w2.T[0], w2.T[1], "bx", label="group 2 mean")
         plt.plot(line1x, line1y, "b")
         plt.plot(line2x, line2y, "r")
-        plt.title("Part 2: K-Means Clustering Iteration " + str(iter))
+
         plt.draw()
         plt.pause(0.3)
 
@@ -127,7 +127,7 @@ def main():
         old1[0] = w1[0]
 
         iter += 1
-
+        plt.title("Part 2: K-Means Clustering Iteration " + str(iter+1))
 
 if __name__ == '__main__':
     main()

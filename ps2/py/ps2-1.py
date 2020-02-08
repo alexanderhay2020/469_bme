@@ -71,7 +71,7 @@ class NeuralNetwork:
         # delta_w = a * dE/dw
         for i in range(len(self.output.neurons)):
             for w_o in range(len(self.output.neurons[i].weights)):
-                pd_error_wrt_weight = output_delta[i] * self.output.neurons[i].dz_dw(w_o)
+                pd_error_wrt_weight = (self.p * output_delta[i]) * self.output.neurons[i].dz_dw(w_o)
                 self.output.neurons[i].weights[w_o] -= self.mu * pd_error_wrt_weight
 
         # 4. Update hidden neuron weights
