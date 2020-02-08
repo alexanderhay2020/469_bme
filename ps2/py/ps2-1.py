@@ -1,9 +1,19 @@
 #!/usr/bin/env python2
+"""
+https://github.com/dennybritz/nn-from-scratch
+https://www.freecodecamp.org/news/building-a-3-layer-neural-network-from-scratch-99239c4af5d3/
+https://www.kaggle.com/jantinbergen/challenge-1-bletchley-three-layer-nnetwork?scriptVersionId=2460820
+https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+http://staff.itee.uq.edu.au/janetw/cmc/chapters/BackProp/index2.html
+https://www.cse.unsw.edu.au/~cs9417ml/MLP2/BackPropagation.html
+"""
+
 
 import random
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 np.random.seed(1)
 
@@ -11,9 +21,9 @@ class NeuralNetwork:
     mu = .05      # eta       learning rate
     p = .9
 
-    def __init__(self, num_inputs, num_hidden, num_outputs):
+    def __init__(self, nsamp, num_hidden, num_outputs):
 
-        self.num_inputs = num_inputs
+        self.nsamp = nsamp
         self.hidden = NeuronLayer(num_hidden)
         self.output = NeuronLayer(num_outputs)
 
@@ -23,7 +33,7 @@ class NeuralNetwork:
     # v = unifrnd(-1,1,nhidden,noutput);
     def init_weights(self):
         for j in range(len(self.hidden.neurons)):
-            for k in range(self.num_inputs):
+            for k in range(self.nsamp):
                 self.hidden.neurons[j].weights.append(np.random.normal(-1, 1))
 
         for i in range(len(self.output.neurons)):
@@ -36,14 +46,14 @@ class NeuralNetwork:
 
 
     # Uses online learning, ie updating the weights after each training case
-    def train(self, training_inputs, training_outputs):
-        self.feed_forward(training_inputs)
+    def train(self, input, output):
+        self.feed_forward(input)
 
         # 1. Output neuron deltas
         # dE/dz
         output_delta = [0] * len(self.output.neurons)
         for i in range(len(self.output.neurons)):
-            output_delta[i] = self.output.neurons[i].calculate_pd_error_wrt_total_net_input(training_outputs[i])
+            output_delta[i] = self.output.neurons[i].dE_dz(output[i])
 
         # 2. Hidden neuron deltas
         # dE/dy = Sigma dE/dz * dz/dy = Sigma dE/dz * w
@@ -61,7 +71,7 @@ class NeuralNetwork:
         # delta_w = a * dE/dw
         for i in range(len(self.output.neurons)):
             for w_o in range(len(self.output.neurons[i].weights)):
-                pd_error_wrt_weight = output_delta[i] * self.output.neurons[i].calculate_pd_total_net_input_wrt_weight(w_o)
+                pd_error_wrt_weight = output_delta[i] * self.output.neurons[i].dz_dw(w_o)
                 self.output.neurons[i].weights[w_o] -= self.mu * pd_error_wrt_weight
 
         # 4. Update hidden neuron weights
@@ -69,32 +79,20 @@ class NeuralNetwork:
         # delta_w = a * dE/dw
         for j in range(len(self.hidden.neurons)):
             for w_h in range(len(self.hidden.neurons[j].weights)):
-                pd_error_wrt_weight = hidden_delta[j] * self.hidden.neurons[j].calculate_pd_total_net_input_wrt_weight(w_h)
+                pd_error_wrt_weight = hidden_delta[j] * self.hidden.neurons[j].dz_dw(w_h)
                 self.hidden.neurons[j].weights[w_h] -= self.mu * pd_error_wrt_weight
 
 
     def calculate_total_error(self, training_sets):
         total_error = 0
         for t in range(len(training_sets)):
-            training_inputs, training_outputs = training_sets[t]
-            self.feed_forward(training_inputs)
-            for o in range(len(training_outputs)):
-                total_error += self.output.neurons[o].calc_MSE(training_outputs[o])
-                # print self.output.neurons[o]
+            input, output = training_sets[t]
+            self.feed_forward(input)
+            for o in range(len(output)):
+                total_error += self.output.neurons[o].calc_MSE(output[o])
+                # print self.output.neurons
+
         return total_error
-
-
-    def inspect(self):
-        print('------')
-        print('* Inputs: {}'.format(self.num_inputs))
-        print('------')
-        print('Hidden Layer')
-        self.hidden.inspect()
-        print('------')
-        print
-        print('* Output Layer')
-        self.output.inspect()
-        print('------')
 
 
 class NeuronLayer:
@@ -122,15 +120,6 @@ class NeuronLayer:
         return outputs
 
 
-    def inspect(self):
-        print('Neurons:', len(self.neurons))
-        for n in range(len(self.neurons)):
-            print(' Neuron', n)
-            for w in range(len(self.neurons[n].weights)):
-                print('  Weight:', self.neurons[n].weights[w])
-            print('  Bias:', self.bias)
-
-
 class Neuron:
     def __init__(self, bias):
         self.bias = bias
@@ -139,11 +128,11 @@ class Neuron:
 
     def calculate_output(self, inputs):
         self.inputs = inputs
-        self.y_hat = self.sigmoid(self.calculate_total_net_input())
+        self.y_hat = self.sigmoid(self.xw())
         return self.y_hat
 
 
-    def calculate_total_net_input(self):
+    def xw(self):
         total = 0
         for i in range(len(self.inputs)):
             # print len(self.inputs)
@@ -159,19 +148,15 @@ class Neuron:
         return self.y_hat * (1 - self.y_hat)
 
     # d = dE/dz = dE/dy * dy/dz
-    def calculate_pd_error_wrt_total_net_input(self, y):
+    def dE_dz(self, y):
         return -(y - self.y_hat) * (self.y_hat * (1 - self.y_hat));
 
     # The error for each neuron is calculated by the Mean Square Error method:
     def calc_MSE(self, y):
         return 0.5 * (y - self.y_hat) ** 2
 
-    # The total net input is the weighted sum of all the inputs to the neuron and their respective weights:
-    # = z = net = xw + xw ...
-    #
-    # The partial derivative of the total net input with respective to a given weight (with everything else held constant) then is:
-    # = dz/dw = some constant + 1 * xw^(1-0) + some constant ... = x
-    def calculate_pd_total_net_input_wrt_weight(self, index):
+    # = dz/dw = x
+    def dz_dw(self, index):
         return self.inputs[index]
 
 
@@ -232,6 +217,23 @@ def main():
     nhidden = 4
     noutput = 3
 
+    # Initial Data Plot
+    fig1 = plt.figure()
+    ax = fig1.add_subplot(111, projection='3d')
+    for i in range(nsamp):
+        xs = input[i][0]
+        ys = input[i][1]
+        zs = input[i][2]
+        if (i<50):
+            ax.scatter(xs, ys, zs, marker='.', color='b', label='dataset 1')
+        elif (50<i<100):
+            ax.scatter(xs, ys, zs, marker='.', color='r', label='dataset 2')
+        elif (i>100):
+            ax.scatter(xs, ys, zs, marker='.', color='g', label='dataset 3')
+    ax.set_title('Dataset')
+
+
+    # Supervised Learning
     training_set = [None]*nsamp
     total_error = [None]*epochs
     for i in range(nsamp):
@@ -245,10 +247,13 @@ def main():
             print "epoch: " + str(i) + "/" + str(epochs)
         total_error[i] = nn.calculate_total_error(training_set)
 
-    fig0 = plt.figure()
+
+    # Error Plot
+    fig3 = plt.figure()
+    plt.title('Total Error')
     plt.plot(total_error)
+
     plt.show()
-    # nn.inspect()
 
 if __name__ == '__main__':
     main()
