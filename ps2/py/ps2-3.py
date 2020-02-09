@@ -2,33 +2,24 @@
 
 """
 Unsupervised Learning - ML Gradient Descent
-Autoencoder
 """
 
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-# import pytorch
+import scipy.stats as stats
 
 np.random.seed(1)
 
-def sigmoid(x):
-    """
-    args: x - some number
 
-    return: some value between 0 and 1 based on sigmoid function
-    """
-
-    return 1/(1+np.exp(-x))
+def inv(sigma):
+    return 1/(sigma*np.sqrt(2*np.pi))
 
 
-def sigmoid_derivative(x):
-    """
-    args: x - some number
-
-    return: derivative of sigmiod given x
-    """
-    return sigmoid(x)*(1-sigmoid(x))
+def dll_dmu(x, mu, sigma):
+    sum = 0
+    for i in range(len(x)):
+        sum += (x[i] - mu)/(2*(sigma**2))
 
 
 def main():
@@ -86,7 +77,7 @@ def main():
 
     w1 = np.mean(input) + np.random.normal(-1, 1, (1,2))
     w2 = np.mean(input) + np.random.normal(-1, 1, (1,2))
-
+    w = np.append(w1, w2, axis=0)
     # s1 = sqrt(mean(var(input)));
     # s2 = sqrt(mean(var(input)));
     s1 = math.sqrt(np.mean(np.var(input)))
@@ -122,48 +113,15 @@ def main():
 
 
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    AUTOENCODER
+    Unsupervised Learning - Gradient Descent
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    while (diff1 > 0) & (diff2 > 0):
 
-        tempx1 = 0
-        tempx2 = 0
-        tempy1 = 0
-        tempy2 = 0
-
-        # classifies data
-        for i in range(nsamp):
-            euclidian1 = np.sqrt((w1.T[0] - input[i][0])**2 + (w1.T[1] - input[i][1])**2)
-            euclidian2 = np.sqrt((w2.T[0] - input[i][0])**2 + (w2.T[1] - input[i][1])**2)
-
-            if euclidian1 < euclidian2:
-                cluster[i] = 0
-            else:
-                cluster[i] = 1
-
-        # moves cluster mean
-        for i in range(nsamp):
-            if cluster[i] == 0:
-                tempx1 += input[i][0]
-                tempy1 += input[i][1]
-            elif cluster[i] ==1:
-                tempx2 += input[i][0]
-                tempy2 += input[i][1]
-
-        tempw1[0][0] = tempx1/(nsamp-sum(cluster))
-        tempw1[0][1] = tempy1/(nsamp-sum(cluster))
-
-        tempw2[0][0] = tempx2/sum(cluster)
-        tempw2[0][1] = tempy2/sum(cluster)
-
-        diff1 = sum(sum(abs(tempw1 - w1)))
-        diff2 = sum(sum(abs(tempw2 - w2)))
-
-        w1 = tempw1
-        w2 = tempw2
-
-
-
+    sum1 = 0
+    sum2 = 0
+    # pd_wrt_mean
+    # for i in range(nsamp):
+    #     for j in range(len(w)):
+            
 
 if __name__ == '__main__':
     main()
